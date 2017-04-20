@@ -1,3 +1,6 @@
+import datetime
+import re
+
 import holidays
 
 penn_holidays = {
@@ -33,3 +36,14 @@ def is_workday(date):
     if is_holiday(date):
         return False
     return True
+
+
+def issue_title_to_date(title):
+    """
+    Return a datetime.date object from a Scrum issue title.
+    """
+    pattern = re.compile(r'([0-9]{4})-([0-9]{2})-([0-9]{2}):')
+    match = pattern.match(title)
+    if not match:
+        return None
+    return datetime.date(*map(int, match.groups()))
