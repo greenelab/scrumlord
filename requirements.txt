@@ -1,1 +1,2 @@
 holidays==0.8.1
+PyGithub==1.34
