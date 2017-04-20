@@ -51,13 +51,13 @@ def issue_title_to_date(title: str):
     return datetime.date(*map(int, match.groups()))
 
 
-def close_old_issues(repo, lifespan: int):
+def close_old_issues(issues, lifespan: int):
     """
     Close scrum issues older than the number of days specified by lifespan.
     """
-    lifespan = datetime.timedelta(lifespan)
+    lifespan = datetime.timedelta(days=lifespan)
     today = datetime.date.today()
-    for issue in repo.get_issues():
+    for issue in issues:
         title = issue.title
         date = issue_title_to_date(title)
         if not date:
@@ -65,6 +65,28 @@ def close_old_issues(repo, lifespan: int):
         if today - date > lifespan:
             print('Closing', title)
             issue.edit(state='closed')
+
+
+def create_scrum_issue(repo, date):
+    """
+    Create a scrum issue for the given date
+    """
+    title = f"{date}: e-scrum for {date:%A, %B %-d, %Y}"
+    print('Creating', title)
+    repo.create_issue(title)
+
+
+def get_future_dates_without_issues(issues, days_ahead=2):
+    """
+    Look through issues and yield future dates that don't exist.
+    """
+    dates = {issue_title_to_date(x.title) for x in issues}
+    today = datetime.date.today()
+    for i in range(days_ahead + 1):
+        date = today + datetime.timedelta(days=i)
+        if date not in dates and is_workday(date):
+            yield date
+            dates.add(date)
 
 
 if __name__ == '__main__':
@@ -82,4 +104,12 @@ if __name__ == '__main__':
         if repo.full_name == 'greenelab/scrum':
             break
 
-    close_old_issues(repo, args.lifespan)
+    # Get open issues
+    issues = list(repo.get_issues())
+
+    # Close old issues
+    close_old_issues(issues, args.lifespan)
+
+    # Create upcoming issues
+    for date in get_future_dates_without_issues(issues):
+        create_scrum_issue(repo, date)
