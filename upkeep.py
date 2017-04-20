@@ -16,7 +16,7 @@ penn_holidays = {
 us_holidays = holidays.UnitedStates()
 
 
-def is_holiday(date):
+def is_holiday(date) -> bool:
     """
     Return True or False for whether a date is a holiday
     """
@@ -27,7 +27,7 @@ def is_holiday(date):
     return name in penn_holidays
 
 
-def is_workday(date):
+def is_workday(date) -> bool:
     """
     Return boolean for whether a date is a workday.
     """
@@ -38,7 +38,7 @@ def is_workday(date):
     return True
 
 
-def issue_title_to_date(title):
+def issue_title_to_date(title: str):
     """
     Return a datetime.date object from a Scrum issue title.
     """
