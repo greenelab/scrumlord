@@ -100,9 +100,8 @@ if __name__ == '__main__':
     user = gh.get_user()
 
     # Get greenelab/scrum repository. Could not find a better way
-    for repo in user.get_repos():
-        if repo.full_name == 'greenelab/scrum':
-            break
+    repo, = [repo for repo in user.get_repos()
+             if repo.full_name == 'greenelab/scrum']
 
     # Get open issues
     issues = list(repo.get_issues())
