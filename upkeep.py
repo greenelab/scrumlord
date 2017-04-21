@@ -93,7 +93,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--username', default='scrum-lord')
     parser.add_argument(
-        '--token', description='GitHub personal access token for --username')
+        '--token', help='GitHub personal access token for --username')
     parser.add_argument('--repository', default='greenelab/scrum')
     parser.add_argument('--lifespan', type=int, default=7)
     args = parser.parse_args()
