@@ -92,7 +92,9 @@ def get_future_dates_without_issues(issues, days_ahead=2):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--username', default='scrum-lord')
-    parser.add_argument('--token')
+    parser.add_argument(
+        '--token', description='GitHub personal access token for --username')
+    parser.add_argument('--repository', default='greenelab/scrum')
     parser.add_argument('--lifespan', type=int, default=7)
     args = parser.parse_args()
 
@@ -101,7 +103,7 @@ if __name__ == '__main__':
 
     # Get greenelab/scrum repository. Could not find a better way
     repo, = [repo for repo in user.get_repos()
-             if repo.full_name == 'greenelab/scrum']
+             if repo.full_name == args.repository]
 
     # Get open issues
     issues = list(repo.get_issues())
