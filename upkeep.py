@@ -18,6 +18,14 @@ penn_holidays = {
 us_holidays = holidays.UnitedStates()
 
 
+def get_today():
+    """
+    Returns the datetime.date for today. Needed since tests cannot mock a
+    builtin type: http://stackoverflow.com/a/24005764/4651668
+    """
+    return datetime.date.today()
+
+
 def is_holiday(date) -> bool:
     """
     Return True or False for whether a date is a holiday
@@ -56,7 +64,7 @@ def close_old_issues(issues, lifespan: int):
     Close scrum issues older than the number of days specified by lifespan.
     """
     lifespan = datetime.timedelta(days=lifespan)
-    today = datetime.date.today()
+    today = get_today()
     for issue in issues:
         title = issue.title
         date = issue_title_to_date(title)
@@ -76,17 +84,31 @@ def create_scrum_issue(repo, date):
     repo.create_issue(title)
 
 
-def get_future_dates_without_issues(issues, days_ahead=2):
+def get_future_dates_without_issues(issues, workdays_ahead=2):
     """
-    Look through issues and yield future dates that don't exist.
+    Look through issues and yield the dates of future workdays (includes today)
+    that don't have open issues.
     """
-    dates = {issue_title_to_date(x.title) for x in issues}
-    today = datetime.date.today()
-    for i in range(days_ahead + 1):
-        date = today + datetime.timedelta(days=i)
-        if date not in dates and is_workday(date):
+    future_dates = set(get_upcoming_workdays(workdays_ahead))
+    future_dates -= {issue_title_to_date(x.title) for x in issues}
+    return sorted(future_dates)
+
+
+def get_upcoming_workdays(workdays_ahead=2):
+    """
+    Return a generator of the next number of workdays specified by
+    workdays_ahead. The current day is yielded first, if a workday,
+    and does not count as one of workdays_ahead.
+    """
+    date = get_today()
+    if is_workday(date):
+        yield date
+    i = 0
+    while i < workdays_ahead:
+        date += datetime.timedelta(days=1)
+        if is_workday(date):
             yield date
-            dates.add(date)
+            i += 1
 
 
 if __name__ == '__main__':
@@ -96,6 +118,7 @@ if __name__ == '__main__':
         '--token', help='GitHub personal access token for --username')
     parser.add_argument('--repository', default='greenelab/scrum')
     parser.add_argument('--lifespan', type=int, default=7)
+    parser.add_argument('--workdays-ahead', type=int, default=2)
     args = parser.parse_args()
 
     gh = github.Github(args.username, args.token)
@@ -112,5 +135,6 @@ if __name__ == '__main__':
     close_old_issues(issues, args.lifespan)
 
     # Create upcoming issues
-    for date in get_future_dates_without_issues(issues):
+    dates = get_future_dates_without_issues(issues, args.workdays_ahead)
+    for date in dates:
         create_scrum_issue(repo, date)
