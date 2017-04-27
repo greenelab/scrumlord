@@ -5,6 +5,14 @@ import pytest
 import upkeep
 
 
+class Issue:
+    """
+    Mock of github.Issue.Issue class
+    """
+    def __init__(self, title):
+        self.title = title
+
+
 @pytest.mark.parametrize("date_tuple,holiday", [
     ((2016, 7, 4), True),  # Independence Day
     ((2017, 7, 4), True),  # Independence Day
@@ -42,3 +50,59 @@ def test_is_workday(date_tuple, workday):
 def test_issue_title_to_date(title, date_tuple):
     date = datetime.date(*date_tuple) if date_tuple else None
     assert upkeep.issue_title_to_date(title) == date
+
+
+def test_get_future_dates_without_issues_friday(monkeypatch):
+    today = datetime.date(2017, 4, 21)  # Friday
+    monkeypatch.setattr('upkeep.get_today', lambda: today)
+    expected = [
+        datetime.date(2017, 4, 21),  # Friday, today
+        datetime.date(2017, 4, 24),  # Monday
+        datetime.date(2017, 4, 25),  # Tuesday
+        datetime.date(2017, 4, 26),  # Wednesday
+    ]
+    issues = []  # No open issues
+    dates = upkeep.get_future_dates_without_issues(issues, workdays_ahead=3)
+    assert list(dates) == expected
+
+
+def test_get_future_dates_without_issues_saturday(monkeypatch):
+    today = datetime.date(2017, 4, 22)  # Saturday
+    monkeypatch.setattr('upkeep.get_today', lambda: today)
+    expected = [
+        datetime.date(2017, 4, 24),  # Monday
+        datetime.date(2017, 4, 25),  # Tuesday
+    ]
+    issues = []  # No open issues
+    dates = upkeep.get_future_dates_without_issues(issues, workdays_ahead=2)
+    assert list(dates) == expected
+
+
+def test_get_future_dates_without_issues_monday(monkeypatch):
+    today = datetime.date(2017, 4, 24)  # Monday
+    monkeypatch.setattr('upkeep.get_today', lambda: today)
+    expected = [
+        datetime.date(2017, 4, 24),  # Monday
+        datetime.date(2017, 4, 25),  # Tuesday
+        datetime.date(2017, 4, 26),  # Wednesday
+    ]
+    issues = []  # No open issues
+    dates = upkeep.get_future_dates_without_issues(issues, workdays_ahead=2)
+    assert list(dates) == expected
+
+
+def test_get_future_dates_without_issues_wednesday(monkeypatch):
+    """
+    Issue already open for current workday.
+    """
+    issues = [
+        Issue('2017-04-26: e-scrum for Wednesday, April 26, 2017'),
+    ]
+    today = datetime.date(2017, 4, 26)  # Wednesday
+    monkeypatch.setattr('upkeep.get_today', lambda: today)
+    expected = [
+        datetime.date(2017, 4, 27),  # Thursday
+        datetime.date(2017, 4, 28),  # Friday
+    ]
+    dates = upkeep.get_future_dates_without_issues(issues, workdays_ahead=2)
+    assert list(dates) == expected
