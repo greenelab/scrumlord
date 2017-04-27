@@ -13,14 +13,14 @@ Users may want to adjust their notification preferences so they receive emails o
 This is not an option provided by GitHub, so the following workaround is recommended:
 
 1. Set your `greenelab/scrum` [notification status](https://github.com/greenelab/scrum/subscription) to **Not Watching**,
-  so "you will only receive notifications when you participate or are `@mentioned`."
+so "you will only receive notifications when you participate or are `@mentioned`."
 
 2. Create an email filter to delete messages sent to `scrum@noreply.github.com` that contain the text "You are receiving this because you commented."
-  In Gmail, the filter syntax looks like:
+In Gmail, the filter syntax looks like:
 
-  ```
-  to:(scrum@noreply.github.com) "You are receiving this because you commented."
-  ```
+    ```
+    to:(scrum@noreply.github.com) "You are receiving this because you commented."
+    ```
 
 With the above policy, you will still receive notifications where:
 "You are receiving this because you were mentioned."
