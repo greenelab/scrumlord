@@ -5,7 +5,18 @@ import re
 import holidays
 import github
 
-penn_holidays = {
+
+class PennHolidays(holidays.UnitedStates):
+
+    def _populate(self, year):
+        super()._populate(year)
+
+        # See https://github.com/greenelab/scrum/issues/114
+        for day in range(26, 32):
+            self[datetime.date(year, 12, day)] = 'Special Winter Vacation'
+
+
+holiday_names = {
     'Independence Day',
     'Labor Day',
     'Thanksgiving',
@@ -13,9 +24,10 @@ penn_holidays = {
     "New Year's Day",
     'Martin Luther King, Jr. Day',
     'Memorial Day',
+    'Special Winter Vacation',
 }
 
-us_holidays = holidays.UnitedStates()
+penn_holidays = PennHolidays()
 
 
 def get_today():
@@ -30,11 +42,11 @@ def is_holiday(date) -> bool:
     """
     Return True or False for whether a date is a holiday
     """
-    name = us_holidays.get(date)
+    name = penn_holidays.get(date)
     if not name:
         return False
     name = name.replace(' (Observed)', '')
-    return name in penn_holidays
+    return name in holiday_names
 
 
 def is_workday(date) -> bool:
