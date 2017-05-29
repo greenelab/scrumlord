@@ -84,7 +84,10 @@ def close_old_issues(issues, lifespan: int):
             continue
         if today - date > lifespan:
             print('Closing', title)
-            issue.edit(state='closed')
+            try:
+                issue.edit(state='closed')
+            except Exception as e:
+                print('Closing issue failed:', e)
 
 
 def create_scrum_issue(repo, date):
@@ -93,7 +96,10 @@ def create_scrum_issue(repo, date):
     """
     title = f"{date}: e-scrum for {date:%A, %B %-d, %Y}"
     print('Creating', title)
-    repo.create_issue(title)
+    try:
+        repo.create_issue(title)
+    except Exception as e:
+        print('Creating issue failed:', e)
 
 
 def get_future_dates_without_issues(issues, workdays_ahead=2):
