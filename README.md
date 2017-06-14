@@ -1,26 +1,19 @@
-# Greene Lab Electronic Scrum
+# Continuous administration of the Greene Lab's electronic scrum
 
-[![Build Status](https://travis-ci.com/greenelab/scrum.svg?token=7FyZyp7bN9WxFnsviy1B&branch=master)](https://travis-ci.com/greenelab/scrum)
+[![Build Status](https://travis-ci.org/greenelab/scrumlord.svg?branch=master)](https://travis-ci.org/greenelab/scrumlord)
 
-This repository is home to the Greene Lab's electronic [scrum](http://greenelab-onboarding.readthedocs.io/en/latest/communication.html?highlight=scrum) (e-scrum).
-Scrums occur via [issues](https://github.com/greenelab/scrum/issues) using GitHub flavored markdown and its [task lists interface](https://github.com/blog/1375-task-lists-in-gfm-issues-pulls-comments).
+## Summary
 
-The [**@scrum-lord**](https://github.com/scrum-lord) is a machine user who maintains the issues via daily Travis CI cron jobs.
+This repository automates the management of GitHub issues, which must be opened and closed based on the date.
 
-## GitHub Email Notifications
+## Details
 
-Users may want to adjust their notification preferences so they receive emails only when they're mentioned and not when they participate in an issue.
-This is not an option provided by GitHub, so the following workaround is recommended:
+The Greene Lab does an electronic [scrum](http://greenelab-onboarding.readthedocs.io/en/latest/communication.html?highlight=scrum) (e-scrum) where lab members create daily task lists using GitHub issues on [`greenelab/scrum`](https://github.com/greenelab/scrum) (private repository).
+To automate the administration of `greenelab/scrum` issues, this repository relies on Travis CI daily cron jobs and a GitHub machine user named [**@scrum-lord**](https://github.com/scrum-lord).
+Every day, Travis CI executes the commands in [`.travis.yml`](.travis.yml).
+As appropriate, **@scrum-lord** closes and opens issues to keep the scrum issues up to date.
 
-1. Set your `greenelab/scrum` [notification status](https://github.com/greenelab/scrum/subscription) to **Not Watching**,
-so "you will only receive notifications when you participate or are `@mentioned`."
+## Reuse
 
-2. Create an email filter to delete messages sent to `scrum@noreply.github.com` that contain the text "You are receiving this because you commented."
-In Gmail, the filter syntax looks like:
-
-    ```
-    to:(scrum@noreply.github.com) "You are receiving this because you commented."
-    ```
-
-With the above policy, you will still receive notifications where:
-"You are receiving this because you were mentioned."
+Anyone is welcome to adapt this codebase for their use cases.
+The repository is openly licensed as per [`LICENSE.md`](LICENSE.md).
