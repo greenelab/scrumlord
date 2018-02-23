@@ -1,6 +1,6 @@
 # Continuous administration of the Childhood Cancer Data Lab's electronic scrum
 
-[![Build Status](https://travis-ci.org/alexslemonade/scrumlord.svg?branch=master)](https://travis-ci.org/alexslemonade/scrumlord)
+[![Build Status](https://travis-ci.org/AlexsLemonade/scrumlord.svg?branch=master)](https://travis-ci.org/AlexsLemonade/scrumlord)
 
 ## Summary
 
