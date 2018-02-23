@@ -11,10 +11,6 @@ class PennHolidays(holidays.UnitedStates):
     def _populate(self, year):
         super()._populate(year)
 
-        # See https://github.com/greenelab/scrum/issues/114
-        for day in range(26, 32):
-            self[datetime.date(year, 12, day)] = 'Special Winter Vacation'
-
 
 holiday_names = {
     'Independence Day',
@@ -131,10 +127,10 @@ def get_upcoming_workdays(workdays_ahead=2):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--username', default='scrum-lord')
+    parser.add_argument('--username', default='kurtwheeler')
     parser.add_argument(
         '--token', help='GitHub personal access token for --username')
-    parser.add_argument('--repository', default='greenelab/scrum')
+    parser.add_argument('--repository', default='alexslemonade/scrum')
     parser.add_argument('--lifespan', type=int, default=7)
     parser.add_argument('--workdays-ahead', type=int, default=2)
     args = parser.parse_args()
@@ -142,7 +138,7 @@ if __name__ == '__main__':
     gh = github.Github(args.username, args.token)
     user = gh.get_user()
 
-    # Get greenelab/scrum repository. Could not find a better way
+    # Get Alexsleomonade/scrum repository. Could not find a better way
     repo, = [repo for repo in user.get_repos()
              if repo.full_name == args.repository]
 
