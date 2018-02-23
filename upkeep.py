@@ -130,7 +130,7 @@ if __name__ == '__main__':
     parser.add_argument('--username', default='kurtwheeler')
     parser.add_argument(
         '--token', help='GitHub personal access token for --username')
-    parser.add_argument('--repository', default='alexslemonade/scrum')
+    parser.add_argument('--repository', default='AlexsLemonade/scrum')
     parser.add_argument('--lifespan', type=int, default=7)
     parser.add_argument('--workdays-ahead', type=int, default=2)
     args = parser.parse_args()
