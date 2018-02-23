@@ -14,11 +14,6 @@ class Issue:
 
 
 @pytest.mark.parametrize("date_tuple,holiday", [
-    ((2016, 12, 27), True),  # Special Winter Vacation
-    ((2016, 12, 28), True),  # Special Winter Vacation
-    ((2016, 12, 29), True),  # Special Winter Vacation
-    ((2016, 12, 30), True),  # Special Winter Vacation
-    ((2016, 12, 31), True),  # Special Winter Vacation
     ((2016, 7, 4), True),  # Independence Day
     ((2017, 7, 4), True),  # Independence Day
     ((2017, 1, 2), True),  # New Year’s Day
