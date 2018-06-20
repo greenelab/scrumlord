@@ -13,6 +13,18 @@ To automate the administration of `greenelab/scrum` issues, this repository reli
 Every day, Travis CI executes the commands in [`.travis.yml`](.travis.yml).
 As appropriate, **@scrum-lord** closes and opens issues to keep the scrum issues up to date.
 
+## Deployment Instructions
+
+1. Fork repo
+1. Create new empty repo organization/scrum
+1. Get Github login token (https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) with repo scope
+2. log into https://travis-ci.org using github
+3. Add new repo to travis-ci: organization/scrumlord
+4. In the settings for that travis-ci repo:
+- add daily cronjob to always run master branch
+- create environment variable name:GH_TOKEN value:login_token_from_github
+5. Commit changes to master branch to fit your settings (see https://github.com/gentnerlab/scrumlord/network for examples)
+
 ## Reuse
 
 Anyone is welcome to adapt this codebase for their use cases.
