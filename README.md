@@ -27,7 +27,6 @@ Use these instructions to deploy a new instance of the scrumlord to manage scrum
    - Add daily [cronjob](https://docs.travis-ci.com/user/cron-jobs/) to always run master branch
    - Create environment variable named `GH_TOKEN` whose value is the login token from step 3.
 7. Commit changes to master branch to fit your settings (see https://github.com/gentnerlab/scrumlord/network for examples)
-8. Optional: To run immediately (and after every commit) remove `test $TRAVIS_EVENT_TYPE = "cron" &&` from .travis.yml, otherwise it will only run when triggered by the cronjob
 
 ## Reuse
 
