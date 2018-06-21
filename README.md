@@ -20,12 +20,12 @@ Use these instructions to deploy a new instance of the scrumlord to manage scrum
 1. Fork repo
 2. Create new empty repo organization/scrum
 3. Get Github login token (https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) with repo scope
-  - The safest way to do this is to create a new machine user that doesn't have any other privileges than for the scrum repo
+   - The safest way to do this is to create a new machine user that doesn't have any other privileges than for the scrum repo
 4. log into https://travis-ci.org using github
 5. Add new repo to travis-ci: organization/scrumlord
 6. In the settings for that travis-ci repo:
-  - Add daily cronjob to always run master branch
-  - Create environment variable name:GH_TOKEN value:login_token_from_github
+   - Add daily cronjob to always run master branch
+   - Create environment variable name:GH_TOKEN value:login_token_from_github
 7. Commit changes to master branch to fit your settings (see https://github.com/gentnerlab/scrumlord/network for examples)
 
 ## Reuse
