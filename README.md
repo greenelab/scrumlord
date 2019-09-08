@@ -8,7 +8,7 @@ This repository automates the management of GitHub issues, which must be opened 
 
 ## Details
 
-The Greene Lab does an electronic [scrum](http://greenelab-onboarding.readthedocs.io/en/latest/communication.html?highlight=scrum) (e-scrum) where lab members create daily task lists using GitHub issues on [`greenelab/scrum`](https://github.com/greenelab/scrum) (private repository).
+The Greene Lab does an electronic [scrum](https://github.com/greenelab/onboarding/blob/master/onboarding.md#meetings) (e-scrum) where lab members create daily task lists using GitHub issues on [`greenelab/scrum`](https://github.com/greenelab/scrum) (private repository).
 To automate the administration of `greenelab/scrum` issues, this repository relies on Travis CI daily cron jobs and a GitHub machine user named [**@scrum-lord**](https://github.com/scrum-lord).
 Every day, Travis CI executes the commands in [`.travis.yml`](.travis.yml).
 As appropriate, **@scrum-lord** closes and opens issues to keep the scrum issues up to date.
