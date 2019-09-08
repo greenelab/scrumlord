@@ -1,6 +1,10 @@
 import argparse
 import datetime
+import functools
 import re
+import sys
+import traceback
+import typing
 
 import holidays
 import github
@@ -30,7 +34,7 @@ holiday_names = {
 penn_holidays = PennHolidays()
 
 
-def get_today():
+def get_today() -> datetime.date:
     """
     Returns the datetime.date for today. Needed since tests cannot mock a
     builtin type: http://stackoverflow.com/a/24005764/4651668
@@ -38,7 +42,7 @@ def get_today():
     return datetime.date.today()
 
 
-def is_holiday(date) -> bool:
+def is_holiday(date: datetime.date) -> bool:
     """
     Return True or False for whether a date is a holiday
     """
@@ -60,7 +64,8 @@ def is_workday(date) -> bool:
     return True
 
 
-def issue_title_to_date(title: str):
+@functools.lru_cache()
+def issue_title_to_date(title: str) -> typing.Optional[datetime.date]:
     """
     Return a datetime.date object from a Scrum issue title.
     """
@@ -78,31 +83,41 @@ def close_old_issues(issues, lifespan: int):
     lifespan = datetime.timedelta(days=lifespan)
     today = get_today()
     for issue in issues:
+        if issue.state == 'closed':
+            continue
         title = issue.title
         date = issue_title_to_date(title)
         if not date:
             continue
         if today - date > lifespan:
-            print('Closing', title)
+            print('Closing', title, file=sys.stderr)
             try:
                 issue.edit(state='closed')
-            except Exception as e:
-                print('Closing issue failed:', e)
+            except Exception:
+                print('Closing issue failed:\n{}'.format(traceback.format_exc()), file=sys.stderr)
 
 
-def create_scrum_issue(repo, date):
+def create_scrum_issue(
+        repo: github.Repository.Repository,
+        date: datetime.date,
+        previous_issue: github.Issue.Issue = None,
+    ) -> typing.Optional[github.Issue.Issue]:
     """
-    Create a scrum issue for the given date
+    Create a scrum issue for the given date.
+    If not None, previous_issue is used to set an issue body
+    that refers to the previous issue.
     """
-    title = f"{date}: e-scrum for {date:%A, %B %-d, %Y}"
-    print('Creating', title)
+    kwargs = {'title': f"{date}: e-scrum for {date:%A, %B %-d, %Y}"}
+    if previous_issue:
+        kwargs['body'] = 'Preceeding e-scrum in {}.'.format(previous_issue.html_url)
+    print('Creating {title!r}'.format(**kwargs), file=sys.stderr)
     try:
-        repo.create_issue(title)
-    except Exception as e:
-        print('Creating issue failed:', e)
+        return repo.create_issue(**kwargs)
+    except Exception:
+        print('Creating issue failed:\n{}'.fomrat(traceback.format_exc()), file=sys.stderr)
 
 
-def get_future_dates_without_issues(issues, workdays_ahead=2):
+def get_future_dates_without_issues(issues, workdays_ahead: int = 2):
     """
     Look through issues and yield the dates of future workdays (includes today)
     that don't have open issues.
@@ -112,7 +127,7 @@ def get_future_dates_without_issues(issues, workdays_ahead=2):
     return sorted(future_dates)
 
 
-def get_upcoming_workdays(workdays_ahead=2):
+def get_upcoming_workdays(workdays_ahead: int = 2) -> typing.Iterator[datetime.date]:
     """
     Return a generator of the next number of workdays specified by
     workdays_ahead. The current day is yielded first, if a workday,
@@ -143,16 +158,31 @@ if __name__ == '__main__':
     user = gh.get_user()
 
     # Get greenelab/scrum repository. Could not find a better way
-    repo, = [repo for repo in user.get_repos()
-             if repo.full_name == args.repository]
+    repo, = [
+        repo for repo in user.get_repos()
+        if repo.full_name == args.repository
+    ]
 
     # Get open issues
-    issues = list(repo.get_issues())
+    open_issues = list(repo.get_issues(state='open'))
 
     # Close old issues
-    close_old_issues(issues, args.lifespan)
+    close_old_issues(open_issues, args.lifespan)
+
+    # Get n most recent issues (open or closed), where n = 10 + --workdays-ahead
+    # to help ensure the most recent existing e-scrum issue is included even when other
+    # non e-scrum issues exist
+    issues = repo.get_issues(state='all', sort='number', direction='desc')[:10 + args.workdays_ahead]
+    date_issue_pairs = [(issue_title_to_date(issue.title), issue) for issue in issues]
+    # Filter issues that are not scrum entries
+    date_issue_pairs = sorted((date, issue) for date, issue in date_issue_pairs if date)
+
+    # Detect previous issue for creation of the first upcoming issue
+    previous_issue = None
+    if date_issue_pairs:
+        _, previous_issue = date_issue_pairs[-1]
 
     # Create upcoming issues
     dates = get_future_dates_without_issues(issues, args.workdays_ahead)
     for date in dates:
-        create_scrum_issue(repo, date)
+        previous_issue = create_scrum_issue(repo, date, previous_issue)
