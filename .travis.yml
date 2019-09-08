@@ -1,8 +1,8 @@
-dist: trusty
+dist: xenial
 sudo: false
 language: python
 python:
-  - "3.6"
+  - "3.7"
 cache: pip
 before_install:
   - export TZ=America/New_York
@@ -10,6 +10,10 @@ install:
   - pip install --requirement requirements.txt
 script:
   - pytest
-after_success:
-  - test $TRAVIS_EVENT_TYPE = "cron" &&
-    python upkeep.py --workdays-ahead=1 --token=$GH_TOKEN
+deploy:
+  provider: script
+  script: python upkeep.py --workdays-ahead=1 --token=$GH_TOKEN
+  skip_cleanup: true
+  on:
+    branch: master
+    condition: $TRAVIS_EVENT_TYPE = "cron"
