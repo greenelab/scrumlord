@@ -176,7 +176,10 @@ if __name__ == '__main__':
     issues = issues[:min(10 + args.workdays_ahead, issues.totalCount)]
     date_issue_pairs = [(issue_title_to_date(issue.title), issue) for issue in issues]
     # Filter issues that are not scrum entries
-    date_issue_pairs = sorted((date, issue) for date, issue in date_issue_pairs if date)
+    filtered_date_issue_pairs = [(date, issue) for date, issue in date_issue_pairs if date]
+
+    # Issue objects are not comparable, so we need to sort by date only
+    date_issue_pairs = sorted(filtered_date_issue_pairs, key=lambda x: x[0])
 
     # Detect previous issue for creation of the first upcoming issue
     previous_issue = None
