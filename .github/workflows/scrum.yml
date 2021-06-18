@@ -13,4 +13,4 @@ jobs:
       run: |
           pip install --requirement requirements.txt
           pytest
-          python upkeep.py --workdays-ahead=1 --token=${{ secrets.SRUMLORD_TOKEN }}
+          python upkeep.py --workdays-ahead=1 --token=${{ secrets.SCRUMLORD_TOKEN }}
