@@ -152,6 +152,7 @@ if __name__ == '__main__':
     parser.add_argument('--repository', default='greenelab/scrum')
     parser.add_argument('--lifespan', type=int, default=7)
     parser.add_argument('--workdays-ahead', type=int, default=2)
+    parser.add_argument('--upkeep-file', type=str, default='uptime.txt')
     args = parser.parse_args()
 
     gh = github.Github(args.username, args.token)
@@ -190,3 +191,18 @@ if __name__ == '__main__':
     dates = get_future_dates_without_issues(issues, args.workdays_ahead)
     for date in dates:
         previous_issue = create_scrum_issue(repo, date, previous_issue)
+
+    # Create a small, meaningless change to keep Github Actions from disabling
+    # the repo for inactivity
+    with open(args.upkeep_file) as in_file:
+        message = in_file.readline().strip()
+
+        days = int(message.split(' ')[3])
+        days += 1
+
+        new_message = "It has been "
+        new_message += str(days)
+        new_message += " days since I last had to tinker with the scrum bot.\n"
+
+    with open(args.upkeep_file, 'w') as out_file:
+        out_file.write(new_message)
