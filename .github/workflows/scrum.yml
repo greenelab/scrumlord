@@ -14,16 +14,6 @@ jobs:
           pip install --requirement requirements.txt
           pytest
           python upkeep.py --workdays-ahead=1 --token=${{ secrets.SCRUMLORD_TOKEN }}
-    # from https://lannonbr.com/blog/2019-12-09-git-commit-in-actions
-    - name: setup git config
-        run: |
-          # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
-          git config user.name "autocommit"
-          git config user.email "<>"
 
-      - name: commit
-        run: |
-          # Stage the file, commit and push
-          git add uptime.txt
-          git commit -m "keepalive"
-          git push origin master
+    - uses: stefanzweifel/git-auto-commit-action@v4
+
