@@ -16,4 +16,5 @@ jobs:
           python upkeep.py --workdays-ahead=1 --token=${{ secrets.SCRUMLORD_TOKEN }}
 
     - uses: stefanzweifel/git-auto-commit-action@v4
-
+      with: 
+        commit_author: scrum-lord <team+scrum-lord@greenelab.com>
