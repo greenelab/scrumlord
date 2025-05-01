@@ -10,14 +10,14 @@ import holidays
 import github
 
 
-class PennHolidays(holidays.UnitedStates):
+# class PennHolidays(holidays.UnitedStates):
 
-    def _populate(self, year):
-        super()._populate(year)
+#     def _populate(self, year):
+#         super()._populate(year)
 
-        # See https://github.com/greenelab/scrum/issues/114
-        for day in range(26, 32):
-            self[datetime.date(year, 12, day)] = 'Special Winter Vacation'
+#         # See https://github.com/greenelab/scrum/issues/114
+#         for day in range(26, 32):
+#             self[datetime.date(year, 12, day)] = 'Special Winter Vacation'
 
 
 holiday_names = {
@@ -31,7 +31,7 @@ holiday_names = {
     'Special Winter Vacation',
 }
 
-penn_holidays = PennHolidays()
+# penn_holidays = PennHolidays()
 
 
 def get_today() -> datetime.date:
@@ -174,7 +174,13 @@ if __name__ == '__main__':
     # to help ensure the most recent existing e-scrum issue is included even when other
     # non e-scrum issues exist
     issues = repo.get_issues(state='all', sort='number', direction='desc')
-    issues = issues[:min(10 + args.workdays_ahead, issues.totalCount)]
+    if issues.totalCount > 0:
+        issues = issues[:min(10 + args.workdays_ahead, issues.totalCount)]
+    else:
+        try: 
+            issues = issues[:(10 + args.workdays_ahead)]
+        except:
+            pass
     date_issue_pairs = [(issue_title_to_date(issue.title), issue) for issue in issues]
     # Filter issues that are not scrum entries
     filtered_date_issue_pairs = [(date, issue) for date, issue in date_issue_pairs if date]
