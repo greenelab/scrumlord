@@ -173,13 +173,19 @@ if __name__ == '__main__':
     # Get n most recent issues (open or closed), where n = 10 + --workdays-ahead
     # to help ensure the most recent existing e-scrum issue is included even when other
     # non e-scrum issues exist
-    issues = repo.get_issues(state='all', sort='number', direction='desc')
-    issues = issues[:min(10 + args.workdays_ahead, issues.totalCount)]
+    # Fetch a reasonable number of recent issues instead of relying on totalCount, which might be unreliable.
+    # Fetching ~30 should be enough to find the last scrum issue and check upcoming dates.
+    num_issues_to_fetch = 30
+    issues_paginator = repo.get_issues(state='all', sort='created', direction='desc') # Sort by creation date descending
+    issues = list(issues_paginator[:num_issues_to_fetch]) # Get up to num_issues_to_fetch items
+
+    # Filter issues based on title format and sort by date
     date_issue_pairs = [(issue_title_to_date(issue.title), issue) for issue in issues]
     # Filter issues that are not scrum entries
     filtered_date_issue_pairs = [(date, issue) for date, issue in date_issue_pairs if date]
 
     # Issue objects are not comparable, so we need to sort by date only
+    # Sort remaining issues by date ascending to easily find the latest one
     date_issue_pairs = sorted(filtered_date_issue_pairs, key=lambda x: x[0])
 
     # Detect previous issue for creation of the first upcoming issue
@@ -188,7 +194,10 @@ if __name__ == '__main__':
         _, previous_issue = date_issue_pairs[-1]
 
     # Create upcoming issues
-    dates = get_future_dates_without_issues(issues, args.workdays_ahead)
+    # Pass the filtered & sorted list to avoid re-filtering inside the function
+    # Extract just the issues from the pairs relevant for checking existence
+    existing_scrum_issues = [pair[1] for pair in date_issue_pairs]
+    dates = get_future_dates_without_issues(existing_scrum_issues, args.workdays_ahead)
     for date in dates:
         previous_issue = create_scrum_issue(repo, date, previous_issue)
 
