@@ -174,7 +174,16 @@ if __name__ == '__main__':
     # to help ensure the most recent existing e-scrum issue is included even when other
     # non e-scrum issues exist
     issues = repo.get_issues(state='all', sort='number', direction='desc')
-    issues = issues[:min(10 + args.workdays_ahead, issues.totalCount)]
+    # If totalCount is working properly
+    if issues.totalCount > 0:
+        issues = issues[:min(10 + args.workdays_ahead, issues.totalCount)]
+    else:
+        # Try reducing the number of issues
+        try: 
+            issues = issues[:(10 + args.workdays_ahead)]
+        # But if that's not possible, just continue
+        except:
+            pass
     date_issue_pairs = [(issue_title_to_date(issue.title), issue) for issue in issues]
     # Filter issues that are not scrum entries
     filtered_date_issue_pairs = [(date, issue) for date, issue in date_issue_pairs if date]
