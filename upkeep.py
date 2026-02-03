@@ -114,7 +114,7 @@ def create_scrum_issue(
     try:
         return repo.create_issue(**kwargs)
     except Exception:
-        print('Creating issue failed:\n{}'.fomrat(traceback.format_exc()), file=sys.stderr)
+        print('Creating issue failed:\n{}'.format(traceback.format_exc()), file=sys.stderr)
 
 
 def get_future_dates_without_issues(issues, workdays_ahead: int = 2):
